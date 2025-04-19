@@ -26,6 +26,41 @@ const __dirname = dirname(__filename);
 // Load environment variables
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
+function loadDeprecatedFunctions() {
+  const dbPath = path.resolve(__dirname, '../deprecated_functions.json');
+  try {
+    const data = fs.readFileSync(dbPath, 'utf8');
+    return JSON.parse(data);
+  } catch (err) {
+    console.warn(chalk.yellow('Warning: Could not load deprecated functions database. Using built-in fallback.'));
+    return [
+      { 
+        "deprecated": "foregroundColor(_:)", 
+        "replacement": "foregroundStyle(_:)",
+        "description": "Use foregroundStyle(_:) instead"
+      },
+      { 
+        "deprecated": "edgesIgnoringSafeArea(_:)", 
+        "replacement": "ignoresSafeArea(_:edges:)",
+        "description": "Use ignoresSafeArea(_:edges:) instead"
+      }
+    ];
+  }
+}
+
+function findRelevantDeprecations(code, allDeprecations) {
+  // Filter to only include deprecations that might be in the code
+  return allDeprecations.filter(item => {
+    // Get the function name without parameters
+    const funcNameMatch = item.deprecated.match(/func\s+([^\s(]+)/);
+    const funcName = funcNameMatch ? funcNameMatch[1] : 
+                    item.deprecated.split('(')[0].trim();
+    
+    // Check if this function name appears in the code
+    return code.includes(funcName);
+  });
+}
+
 const argv = yargs(hideBin(process.argv))
   .usage(chalk.green('Usage: $0 [options] <filename>'))
   .option('a', {
@@ -45,10 +80,15 @@ const argv = yargs(hideBin(process.argv))
     describe: 'Read and display file contents',
     type: 'string',
     demandOption: false
+  }).option('restore', {
+    alias: 'rst',
+    describe: 'Restore file from backup (.bak)',
+    type: 'string',
+    demandOption: false
   })
   .check((argv) => {
-    if (!argv.s && !argv.r && !argv.a) {
-      throw new Error(chalk.red('You must provide either --analyze (-a) or --summarize (-s) or --read (-r) option'));
+    if (!argv.s && !argv.r && !argv.a && !argv.restore) {
+      throw new Error(chalk.red('You must provide either --analyze (-a), --summarize (-s), --read (-r), or --restore option'));
     }
     return true;
   })
@@ -66,6 +106,7 @@ if (argv.a) {
 
   const filePath = path.resolve(argv.a);
 
+
   fs.readFile(filePath, 'utf8', async (err, data) => {
     if (err) {
       console.error(`Error reading file: ${err.message}`);
@@ -75,6 +116,26 @@ if (argv.a) {
     console.log(`Analyzing contents of ${filePath}...`);
 
     try {
+      // Load deprecated functions database
+      const allDeprecations = loadDeprecatedFunctions();
+      
+      // Find relevant deprecations for this code
+      const relevantDeprecations = findRelevantDeprecations(data, allDeprecations);
+      
+      // Show what's being checked
+      const spinner = ora('Analyzing code for deprecated Swift elements...').start();
+      
+      // Build context string from relevant deprecations
+      const deprecationContext = relevantDeprecations
+        .map(item => `${item.deprecated} is deprecated, use ${item.replacement} instead`)
+        .join('\n');
+      
+      // If no relevant deprecations found, add a note
+      const contextMessage = relevantDeprecations.length > 0 
+        ? `\n\nHere is some context: \n${deprecationContext}`
+        : "\n\nNo specific deprecations were detected, but check for any unexpected behavior.";
+
+      // Handle punycode warning as before
       const originalEmitWarning = process.emitWarning;
       process.emitWarning = function(warning, ...args) {
         if (typeof warning === 'string' && warning.includes('punycode')) {
@@ -91,7 +152,7 @@ if (argv.a) {
             "content": [
               {
                 "type": "text",
-                "text": "You are an assistant to an iOS developer to help them identify and fix deprecated modifiers in their swift files. When given a swift file, the first thing to do is identify lines that include deprecated elements. Then figure out how to fix it, using the context given at the end of this prompt. Then, you should return the part of the code that is problematic. Include the view that the deprecated modifier is modifying, as well as any other modifiers that are on that view. Then, after you have returned the problematic section, in one line, briefly state what modifier to use instead. Do not include ANYTHING else. You sometimes include '''swift - do not include this.\n\nHere is some context: \nforegroundColor(_:) is deprecated, use foregroundStyle(_:) instead\n edgesIgnoringSafeArea(_:) is deprecated, use ignoresSafeArea(_:edges:) instead"
+                "text": "You are an assistant to an iOS developer to help them identify and fix deprecated modifiers in their swift files. When given a swift file, the first thing to do is identify lines that include deprecated elements. Then figure out how to fix it, using the context given at the end of this prompt. Then, you should return the part of the code that is problematic. Include the view that the deprecated modifier is modifying, as well as any other modifiers that are on that view. Then, after you have returned the problematic section, in one line, briefly state what modifier to use instead. Do not include ANYTHING else. You sometimes include '''swift - do not include this. Here is some context: " + contextMessage
               }
             ]
           },
@@ -145,6 +206,8 @@ if (argv.a) {
         frequency_penalty: 0,
         presence_penalty: 0
       });
+
+      spinner.succeed('Analysis complete');
 
       const analysisResult = completion.choices[0].message.content;
 
@@ -304,4 +367,28 @@ if (argv.a) {
     console.log(`Contents of ${filePath}:\n`);
     console.log(data);
   });
+} else if (argv.restore) {
+  const filePath = path.resolve(argv.restore);
+  const backupPath = `${filePath}.bak`;
+  
+  // Check if backup exists
+  if (fs.existsSync(backupPath)) {
+    try {
+      // Read backup file
+      const backupData = fs.readFileSync(backupPath, 'utf8');
+      
+      // Write backup data to original file
+      fs.writeFileSync(filePath, backupData);
+      
+      // Delete the backup file after successful restoration
+      fs.unlinkSync(backupPath);
+      
+      console.log(chalk.green(`✅ Successfully restored ${filePath} from backup`));
+      console.log(chalk.gray(`Backup file ${backupPath} has been deleted`));
+    } catch (err) {
+      console.error(chalk.red(`Error during restore operation: ${err.message}`));
+    }
+  } else {
+    console.error(chalk.red(`No backup file found at ${backupPath}`));
+  }
 }

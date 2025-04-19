@@ -1,0 +1,257 @@
+[
+  {
+    "deprecated": "func accessibility(label: Text) -> ModifiedContent<Self, AccessibilityAttachmentModifier>",
+    "replacement": "accessibilityLabel(_:)",
+    "description": "Use accessibilityLabel(_:) instead."
+  },
+  {
+    "deprecated": "func accessibility(value: Text) -> ModifiedContent<Self, AccessibilityAttachmentModifier>",
+    "replacement": "accessibilityValue(_:)",
+    "description": "Use accessibilityValue(_:) instead."
+  },
+  {
+    "deprecated": "func accessibility(hidden: Bool) -> ModifiedContent<Self, AccessibilityAttachmentModifier>",
+    "replacement": "accessibilityHidden(_:)",
+    "description": "Use accessibilityHidden(_:) instead."
+  },
+  {
+    "deprecated": "func accessibility(identifier: String) -> ModifiedContent<Self, AccessibilityAttachmentModifier>",
+    "replacement": "accessibilityIdentifier(_:)",
+    "description": "Use accessibilityIdentifier(_:) instead."
+  },
+  {
+    "deprecated": "func accessibility(selectionIdentifier: AnyHashable) -> ModifiedContent<Self, AccessibilityAttachmentModifier>",
+    "replacement": "None",
+    "description": "This functionality is no longer available."
+  },
+  {
+    "deprecated": "func accessibility(hint: Text) -> ModifiedContent<Self, AccessibilityAttachmentModifier>",
+    "replacement": "accessibilityHint(_:)",
+    "description": "Use accessibilityHint(_:) instead."
+  },
+  {
+    "deprecated": "func accessibility(activationPoint:)",
+    "replacement": "accessibilityActivationPoint(_:)",
+    "description": "Use accessibilityActivationPoint(_:) instead."
+  },
+  {
+    "deprecated": "func accessibility(inputLabels: [Text]) -> ModifiedContent<Self, AccessibilityAttachmentModifier>",
+    "replacement": "accessibilityInputLabels(_:)",
+    "description": "Use accessibilityInputLabels(_:) instead."
+  },
+  {
+    "deprecated": "func accessibility(addTraits: AccessibilityTraits) -> ModifiedContent<Self, AccessibilityAttachmentModifier>",
+    "replacement": "accessibilityAddTraits(_:)",
+    "description": "Use accessibilityAddTraits(_:) instead."
+  },
+  {
+    "deprecated": "func accessibility(removeTraits: AccessibilityTraits) -> ModifiedContent<Self, AccessibilityAttachmentModifier>",
+    "replacement": "accessibilityRemoveTraits(_:)",
+    "description": "Use accessibilityRemoveTraits(_:) instead."
+  },
+  {
+    "deprecated": "func accessibility(sortPriority: Double) -> ModifiedContent<Self, AccessibilityAttachmentModifier>",
+    "replacement": "accessibilitySortPriority(_:)",
+    "description": "Use accessibilitySortPriority(_:) instead."
+  },
+  {
+    "deprecated": "func colorScheme(ColorScheme) -> some View",
+    "replacement": "preferredColorScheme(_:)",
+    "description": "Use preferredColorScheme(_:) instead."
+  },
+  {
+    "deprecated": "func listRowPlatterColor(Color?) -> some View",
+    "replacement": "listItemTint(_:)",
+    "description": "Use listItemTint(_:) instead."
+  },
+  {
+    "deprecated": "func background<Background>(Background, alignment: Alignment) -> some View",
+    "replacement": "background(alignment:content:)",
+    "description": "Use background(alignment:content:) instead."
+  },
+  {
+    "deprecated": "func overlay<Overlay>(Overlay, alignment: Alignment) -> some View",
+    "replacement": "overlay(alignment:content:)",
+    "description": "Use overlay(alignment:content:) instead."
+  },
+  {
+    "deprecated": "func foregroundColor(Color?) -> some View",
+    "replacement": "foregroundStyle(_:)",
+    "description": "Use foregroundStyle(_:) instead."
+  },
+  {
+    "deprecated": "func complicationForeground() -> some View",
+    "replacement": "",
+    "description": "On watchOS 9.0 or later, use WidgetKit instead"
+  },
+  {
+    "deprecated": "func autocapitalization(UITextAutocapitalizationType) -> some View",
+    "replacement": "textInputAutocapitalization(_:)",
+    "description": "Use textInputAutocapitalization(_:) instead."
+  },
+  {
+    "deprecated": "func disableAutocorrection(Bool?) -> some View",
+    "replacement": "autocorrectionDisabled(_:)",
+    "description": "Use autocorrectionDisabled(_:) instead."
+  },
+  {
+    "deprecated": "func navigationBarTitle(_:)",
+    "replacement": "navigationTitle(_:)",
+    "description": "Use navigationTitle(_:) instead."
+  },
+  {
+    "deprecated": "func navigationBarTitle(_:displayMode:)",
+    "replacement": "navigationTitle(_:)",
+    "description": "Use navigationTitle(_:) with navigationBarTitleDisplayMode(_:)."
+  },
+  {
+    "deprecated": "func navigationBarItems<L>(leading: L) -> some View",
+    "replacement": "toolbar(content:)",
+    "description": "Use toolbar(content:) with navigationBarLeading placement."
+  },
+  {
+    "deprecated": "func navigationBarItems<L, T>(leading: L, trailing: T) -> some View",
+    "replacement": "toolbar(content:)",
+    "description": "Use toolbar(content:) with navigationBarLeading or navigationBarTrailing placement."
+  },
+  {
+    "deprecated": "func navigationBarItems<T>(trailing: T) -> some View",
+    "replacement": "toolbar(content:)",
+    "description": "Use toolbar(content:) with navigationBarTrailing placement."
+  },
+  {
+    "deprecated": "func navigationBarHidden(Bool) -> some View",
+    "replacement": "toolbar(_:for:)",
+    "description": "Use toolbar(_:for:) with the Visibility.hidden visibility and the navigationBar placement instead."
+  },
+  {
+    "deprecated": "func statusBar(hidden: Bool) -> some View",
+    "replacement": "statusBarHidden(_:)",
+    "description": "Use statusBarHidden(_:) instead."
+  },
+  {
+    "deprecated": "func contextMenu<MenuItems>(ContextMenu<MenuItems>?) -> some View",
+    "replacement": "contextMenu(menuItems:)",
+    "description": "Use contextMenu(menuItems:) instead."
+  },
+  {
+    "deprecated": "func menuButtonStyle<S>(S) -> some View",
+    "replacement": "menuStyle(_:)",
+    "description": "Use menuStyle(_:) instead."
+  },
+  {
+    "deprecated": "func navigationViewStyle<S>(S) -> some View",
+    "replacement": "this",
+    "description": "Use this modifier to change the appearance and behavior of navigation views. For example, by default, navigation views appear with multiple columns in wider environments, like iPad in landscape orientation:"
+  },
+  {
+    "deprecated": "func frame() -> some View",
+    "replacement": "frame(width:height:alignment:)",
+    "description": "Use frame(width:height:alignment:) or frame(minWidth:idealWidth:maxWidth:minHeight:idealHeight:maxHeight:alignment:) instead."
+  },
+  {
+    "deprecated": "func edgesIgnoringSafeArea(Edge.Set) -> some View",
+    "replacement": "ignoresSafeArea(_:edges:)",
+    "description": "Use ignoresSafeArea(_:edges:) instead."
+  },
+  {
+    "deprecated": "func coordinateSpace<T>(name: T) -> some View",
+    "replacement": "coordinateSpace(_:)",
+    "description": "Use coordinateSpace(_:) instead."
+  },
+  {
+    "deprecated": "func accentColor(Color?) -> some View",
+    "replacement": "tint(_:)",
+    "description": "Use the asset catalog\u2019s accent color or tint(_:) instead."
+  },
+  {
+    "deprecated": "func mask<Mask>(Mask) -> some View",
+    "replacement": "mask(alignment:_:)",
+    "description": "Use mask(alignment:_:) instead."
+  },
+  {
+    "deprecated": "func animation(Animation?) -> some View",
+    "replacement": "withAnimation(_:_:)",
+    "description": "Use withAnimation(_:_:) or animation(_:value:) instead."
+  },
+  {
+    "deprecated": "func cornerRadius(CGFloat, antialiased: Bool) -> some View",
+    "replacement": "clipShape(_:style:)",
+    "description": "Use clipShape(_:style:) or fill(style:) instead."
+  },
+  {
+    "deprecated": "func onChange<V>(of: V, perform: (V) -> Void) -> some View",
+    "replacement": "onChange(of:initial:_:)",
+    "description": "Use onChange(of:initial:_:) or onChange(of:initial:_:) instead. The trailing closure in each case takes either zero or two input parameters, compared to this method which takes one."
+  },
+  {
+    "deprecated": "func onTapGesture(count: Int, coordinateSpace: CoordinateSpace, perform: (CGPoint) -> Void) -> some View",
+    "replacement": "onTapGesture(count:coordinateSpace:perform:)",
+    "description": "Use onTapGesture(count:coordinateSpace:perform:) instead."
+  },
+  {
+    "deprecated": "func onLongPressGesture(minimumDuration: Double, maximumDistance: CGFloat, pressing: ((Bool) -> Void)?, perform: () -> Void) -> some View",
+    "replacement": "onLongPressGesture(minimumDuration:maximumDistance:perform:onPressingChanged:)",
+    "description": "Use onLongPressGesture(minimumDuration:maximumDistance:perform:onPressingChanged:) instead."
+  },
+  {
+    "deprecated": "func onLongPressGesture(minimumDuration: Double, pressing: ((Bool) -> Void)?, perform: () -> Void) -> some View",
+    "replacement": "onLongPressGesture(minimumDuration:perform:onPressingChanged:)",
+    "description": "Use onLongPressGesture(minimumDuration:perform:onPressingChanged:) instead."
+  },
+  {
+    "deprecated": "func onPasteCommand(of: [String], perform: ([NSItemProvider]) -> Void) -> some View",
+    "replacement": "onPasteCommand(of:perform:)",
+    "description": "Use onPasteCommand(of:perform:) instead."
+  },
+  {
+    "deprecated": "func onPasteCommand<Payload>(of: [String], validator: ([NSItemProvider]) -> Payload?, perform: (Payload) -> Void) -> some View",
+    "replacement": "onPasteCommand(of:validator:perform:)",
+    "description": "Use onPasteCommand(of:validator:perform:) instead."
+  },
+  {
+    "deprecated": "func onDrop(of: [String], delegate: any DropDelegate) -> some View",
+    "replacement": "onDrop(of:delegate:)",
+    "description": "Use onDrop(of:delegate:) instead."
+  },
+  {
+    "deprecated": "func focusable(Bool, onFocusChange: (Bool) -> Void) -> some View",
+    "replacement": "focusable(_:)",
+    "description": "Use the focusable(_:) method instead."
+  },
+  {
+    "deprecated": "func onContinuousHover(coordinateSpace: CoordinateSpace, perform: (HoverPhase) -> Void) -> some View",
+    "replacement": "onContinuousHover(coordinateSpace:perform:)",
+    "description": "Use onContinuousHover(coordinateSpace:perform:) instead."
+  },
+  {
+    "deprecated": "func actionSheet(isPresented: Binding<Bool>, content: () -> ActionSheet) -> some View",
+    "replacement": "confirmationDialog(_:isPresented:titleVisibility:actions:message:)",
+    "description": "Use confirmationDialog(_:isPresented:titleVisibility:actions:message:) instead."
+  },
+  {
+    "deprecated": "func actionSheet<T>(item: Binding<T?>, content: (T) -> ActionSheet) -> some View",
+    "replacement": "confirmationDialog(_:isPresented:titleVisibility:presenting:actions:message:)",
+    "description": "Use confirmationDialog(_:isPresented:titleVisibility:presenting:actions:message:) instead."
+  },
+  {
+    "deprecated": "func alert(isPresented: Binding<Bool>, content: () -> Alert) -> some View",
+    "replacement": "alert(_:isPresented:actions:message:)",
+    "description": "Use alert(_:isPresented:actions:message:) instead."
+  },
+  {
+    "deprecated": "func alert<Item>(item: Binding<Item?>, content: (Item) -> Alert) -> some View",
+    "replacement": "alert(_:isPresented:presenting:actions:message:)",
+    "description": "Use alert(_:isPresented:presenting:actions:message:) instead."
+  },
+  {
+    "deprecated": "func searchable(text:placement:prompt:suggestions:)",
+    "replacement": "the",
+    "description": "Use the searchable modifier with the searchSuggestions modifier"
+  },
+  {
+    "deprecated": "func tabItem<V>(() -> V) -> some View",
+    "replacement": "`Tab(title:image:value:content:)`",
+    "description": "Use `Tab(title:image:value:content:)` and related initializers instead"
+  }
+]

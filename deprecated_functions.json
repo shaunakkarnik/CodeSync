@@ -141,8 +141,8 @@
   },
   {
     "deprecated": "func navigationViewStyle<S>(S) -> some View",
-    "replacement": "this",
-    "description": "Use this modifier to change the appearance and behavior of navigation views. For example, by default, navigation views appear with multiple columns in wider environments, like iPad in landscape orientation:"
+    "replacement": "NavigationStack or NavigationSplitView.",
+    "description": "Use NavigationStack or NavigationSplitView instead."
   },
   {
     "deprecated": "func frame() -> some View",
@@ -162,7 +162,7 @@
   {
     "deprecated": "func accentColor(Color?) -> some View",
     "replacement": "tint(_:)",
-    "description": "Use the asset catalog\u2019s accent color or tint(_:) instead."
+    "description": "Use the asset catalog's accent color or tint(_:) instead."
   },
   {
     "deprecated": "func mask<Mask>(Mask) -> some View",
@@ -246,7 +246,7 @@
   },
   {
     "deprecated": "func searchable(text:placement:prompt:suggestions:)",
-    "replacement": "the",
+    "replacement": "",
     "description": "Use the searchable modifier with the searchSuggestions modifier"
   },
   {

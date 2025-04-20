@@ -49,15 +49,25 @@ function loadDeprecatedFunctions() {
 }
 
 function findRelevantDeprecations(code, allDeprecations) {
-  // Filter to only include deprecations that might be in the code
   return allDeprecations.filter(item => {
-    // Get the function name without parameters
-    const funcNameMatch = item.deprecated.match(/func\s+([^\s(]+)/);
-    const funcName = funcNameMatch ? funcNameMatch[1] : 
-                    item.deprecated.split('(')[0].trim();
+    // Skip entries without proper deprecated field
+    if (!item.deprecated) return false;
     
-    // Check if this function name appears in the code
-    return code.includes(funcName);
+    // Extract just the base modifier name without parameters
+    let functionName = item.deprecated;
+    
+    // Handle variations: "func name(...)", "name(...)", or just "name"
+    if (functionName.startsWith("func ")) {
+      functionName = functionName.substring(5).trim();
+    }
+    
+    // Remove any parameter details
+    functionName = functionName.split("(")[0].trim();
+    
+    // Check if the code contains this function name
+    // Use regex to find the function name as a modifier (with a dot before it)
+    const modifierPattern = new RegExp(`\\.${functionName}\\s*\\(`);
+    return modifierPattern.test(code) || code.includes(`.${functionName}`);
   });
 }
 
@@ -123,11 +133,20 @@ if (argv.a) {
       const relevantDeprecations = findRelevantDeprecations(data, allDeprecations);
       
       // Show what's being checked
-      const spinner = ora('Analyzing code for deprecated Swift elements...').start();
+      const spinner = ora('Finding deprecated Swift elements...').start();
       
       // Build context string from relevant deprecations
       const deprecationContext = relevantDeprecations
-        .map(item => `${item.deprecated} is deprecated, use ${item.replacement} instead`)
+        .map(item => {
+          // Clean up the function name for better readability
+          let funcName = item.deprecated || "";
+          // Remove 'func ' prefix if it exists
+          if (funcName.startsWith("func ")) {
+            funcName = funcName.substring(5);
+          }
+          // Return the deprecated function name and its description
+          return `${funcName}: ${item.description}`;
+        })
         .join('\n');
       
       // If no relevant deprecations found, add a note
@@ -152,7 +171,7 @@ if (argv.a) {
             "content": [
               {
                 "type": "text",
-                "text": "You are an assistant to an iOS developer to help them identify and fix deprecated modifiers in their swift files. When given a swift file, the first thing to do is identify lines that include deprecated elements. Then figure out how to fix it, using the context given at the end of this prompt. Then, you should return the part of the code that is problematic. Include the view that the deprecated modifier is modifying, as well as any other modifiers that are on that view. Then, after you have returned the problematic section, in one line, briefly state what modifier to use instead. Do not include ANYTHING else. You sometimes include '''swift - do not include this. Here is some context: " + contextMessage
+                "text": "You are an assistant to an iOS developer helping identify and fix ALL deprecated Swift modifiers. For each deprecated element you find:\n\n1. Show ONLY the deprecated code with 1-2 lines of context before and after\n2. If a deprecated element is part of a small view (less than 6 lines total), show the entire view including the declaration line\n3. Include line numbers but they don't need to be contiguous if deprecated elements are far apart\n4. DO NOT output large sections of code without deprecated elements\n5. Add a comment '// Deprecated' at the end of each line with a deprecated element\n6. Include ALL deprecated elements in the file - be thorough and don't miss any\n\nAfter listing all deprecated elements, provide a bulleted list of replacements.\n\nHere is context about deprecated functions:" + contextMessage
               }
             ]
           },
@@ -161,7 +180,7 @@ if (argv.a) {
             "content": [
               {
                 "type": "text",
-                "text": "import SwiftUI\n\nstruct ContentView: View {\n\n    var body: some View {\n        VStack {\n            Rectangle()\n                .foregroundColor(Color.blue)\n                .frame(width: 100, height: 100)\n        }\n    }\n}"
+                "text": "import SwiftUI\n\nstruct NavigationExample: View {\n    var body: some View {\n        NavigationView {\n            VStack {\n                Image(systemName: \"star\")\n                    .accentColor(.yellow)\n                    .padding()\n                // Many lines of code here\n                // ...\n                // ...\n                Text(\"Hello\")\n                    .foregroundColor(.blue)\n                    .font(.title)\n            }\n            .navigationBarTitle(\"My App\")\n        }\n        .edgesIgnoringSafeArea(.bottom)\n    }\n}"
               }
             ]
           },
@@ -170,7 +189,7 @@ if (argv.a) {
             "content": [
               {
                 "type": "text",
-                "text": "\nRectangle()\n    .foregroundColor(Color.blue) // Deprecated line\n    .frame(width: 100, height: 100\n\nUse `foregroundStyle(_:)` instead of `foregroundColor(_)`."
+                "text": "7|                Image(systemName: \"star\")\n8|                    .accentColor(.yellow) // Deprecated\n9|                    .padding()\n\n14|                Text(\"Hello\")\n15|                    .foregroundColor(.blue) // Deprecated\n16|                    .font(.title)\n\n17|            }\n18|            .navigationBarTitle(\"My App\") // Deprecated\n19|        }\n\n19|        }\n20|        .edgesIgnoringSafeArea(.bottom) // Deprecated\n21|    }\n\nReplacements:\n- Use tint(_:) instead of accentColor(_:)\n- Use foregroundStyle(_:) instead of foregroundColor(_:)\n- Use navigationTitle(_:) instead of navigationBarTitle(_:)\n- Use ignoresSafeArea(_:edges:) instead of edgesIgnoringSafeArea(_:)"
               }
             ]
           },
@@ -179,7 +198,7 @@ if (argv.a) {
             "content": [
               {
                 "type": "text",
-                "text": "import SwiftUI\n\nstruct ContentView: View {\n\n    var body: some View {\n        VStack {\n            Rectangle()\n                .frame(width: 100, height: 100)\n                .edgesIgnoringSafeArea(.all)\n        }\n    }\n}"
+                "text": "import SwiftUI\n\nstruct SimpleView: View {\n    var body: some View {\n        VStack {\n            Image(systemName: \"star\")\n                .accentColor(.yellow)\n                .padding()\n            Text(\"Hello\")\n                .foregroundColor(.blue)\n        }\n        .frame(width: 100)\n    }\n}"
               }
             ]
           },
@@ -188,7 +207,25 @@ if (argv.a) {
             "content": [
               {
                 "type": "text",
-                "text": "Rectangle()\n    .frame(width: 100, height: 100)\n    .edgesIgnoringSafeArea(.all) // Deprecated line\n\nUse `ignoresSafeArea(_:edges:)` instead of `edgesIgnoringSafeArea(_)`."
+                "text": "6|            Image(systemName: \"star\")\n7|                .accentColor(.yellow) // Deprecated\n8|                .padding()\n9|            Text(\"Hello\")\n10|                .foregroundColor(.blue) // Deprecated\n\nReplacements:\n- Use tint(_:) instead of accentColor(_:)\n- Use foregroundStyle(_:) instead of foregroundColor(_:)"
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "import SwiftUI\n\nstruct ComplexView: View {\n    var body: some View {\n        NavigationView {\n            List {\n                HStack {\n                    Image(systemName: \"star\")\n                        .accentColor(.yellow)\n                    Text(\"Item 1\")\n                }\n                \n                // Many lines of non-deprecated code\n                // ...\n                // ...\n                \n                VStack {\n                    Rectangle()\n                        .cornerRadius(10, antialiased: true)\n                        .foregroundColor(.blue)\n                }\n            }\n            .navigationBarItems(trailing: Button(\"Edit\") {})\n        }\n    }\n}"
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "8|                    Image(systemName: \"star\")\n9|                        .accentColor(.yellow) // Deprecated\n10|                    Text(\"Item 1\")\n\n18|                    Rectangle()\n19|                        .cornerRadius(10, antialiased: true) // Deprecated\n20|                        .foregroundColor(.blue) // Deprecated\n21|                }\n\n23|            .navigationBarItems(trailing: Button(\"Edit\") {}) // Deprecated\n24|        }\n\nReplacements:\n- Use tint(_:) instead of accentColor(_:)\n- Use clipShape(RoundedRectangle(cornerRadius:), style:) instead of cornerRadius(_:antialiased:)\n- Use foregroundStyle(_:) instead of foregroundColor(_:)\n- Use toolbar { ToolbarItem(placement: .navigationBarTrailing) { ... } } instead of navigationBarItems(trailing:)"
               }
             ]
           },
@@ -200,7 +237,7 @@ if (argv.a) {
         response_format: {
           "type": "text"
         },
-        temperature: 1,
+        temperature: 0.3,
         max_completion_tokens: 2048,
         top_p: 1,
         frequency_penalty: 0,
